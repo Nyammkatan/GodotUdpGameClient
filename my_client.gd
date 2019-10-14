@@ -30,3 +30,9 @@ func getImportantPacket(result, parent):
 	var p = createIPacket(0)
 	p.data = "thank you"
 	iMessages.append(p)
+	
+func disconnection(parent):
+	print("Disconnect")
+	parent.client = parent.client_class.new()
+	parent.client.init("127.0.0.1", 9999, parent.timeGlobal)
+	pass

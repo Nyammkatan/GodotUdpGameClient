@@ -10,7 +10,7 @@ var timeGlobal = 0
 
 func _ready():
 	client = client_class.new()
-	client.init("127.0.0.1", 9999)
+	client.init("127.0.0.1", 9999, timeGlobal)
 	pass
 
 func removeObject(key):

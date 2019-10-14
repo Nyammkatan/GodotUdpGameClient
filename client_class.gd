@@ -15,7 +15,8 @@ var iMessagesInterval = 0.08
 var connectionTimeCheck = 2
 var lastConnectionTime = 0
 
-func init(host, port):
+func init(host, port, time):
+	lastConnectionTime = time
 	socket = PacketPeerUDP.new()
 	socket.set_dest_address(host, port)
 
@@ -34,7 +35,8 @@ func createIPacket(p_id):
 	return packet
 	
 func send(data):
-	socket.put_packet(JSON.print(data).to_ascii())
+	if (connected):
+		socket.put_packet(JSON.print(data).to_ascii())
 	
 func checkPacketNumber(numberReceived):
 	if (numberReceived > lastPacketNumber or (numberReceived < (maxPacketNumberRange/2) and (lastPacketNumber > maxPacketNumberRange/2))):
@@ -61,30 +63,37 @@ func sendResponse(result):
 	var data = {"im":2, "num":result.num}
 	send(data)
 
+var connected = true
 func loop(delta, timeGlobal, parent):
-	while (socket.get_available_packet_count() > 0):
-		lastConnectionTime = timeGlobal
-		var data = socket.get_packet().get_string_from_ascii()
-		var result = JSON.parse(data).result
-		if (result.im == 0):
-			if (checkPacketNumber(result.num)):
-				getSimplePacket(result, parent)
-		elif(result.im == 1):
-			if (checkIPacketNumber(result.num)):
-				getImportantPacket(result, parent)
-			sendResponse(result)
-		elif(result.im == 2):
-			getResponse(result)
-	iMessagesTimer += delta
-	if (iMessagesTimer >= iMessagesInterval):
-		if (iMessages.size() > 0):
-			var fMessage = iMessages[0]
-			send(fMessage)
-		iMessagesTimer -= iMessagesInterval
-	if (timeGlobal - lastConnectionTime >= connectionTimeCheck):
-		print("Disconnect")
+	if (connected):
+		while (socket.get_available_packet_count() > 0):
+			lastConnectionTime = timeGlobal
+			var data = socket.get_packet().get_string_from_ascii()
+			var result = JSON.parse(data).result
+			if (result.im == 0):
+				if (checkPacketNumber(result.num)):
+					getSimplePacket(result, parent)
+			elif(result.im == 1):
+				if (checkIPacketNumber(result.num)):
+					getImportantPacket(result, parent)
+				sendResponse(result)
+			elif(result.im == 2):
+				getResponse(result)
+		iMessagesTimer += delta
+		if (iMessagesTimer >= iMessagesInterval):
+			if (iMessages.size() > 0):
+				var fMessage = iMessages[0]
+				send(fMessage)
+			iMessagesTimer -= iMessagesInterval
+		if (timeGlobal - lastConnectionTime >= connectionTimeCheck):
+			connected = false
+			disconnection(parent)
+	pass
+	
+func disconnection(parent):
 	pass
 	
 func sendConnectionPacket():
-	var connPacket = {"im": 0, "p_id":-1, "num":packetNumber}
-	send(connPacket)
+	if (connected):
+		var connPacket = {"im": 0, "p_id":-1, "num":packetNumber}
+		send(connPacket)
