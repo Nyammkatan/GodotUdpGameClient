@@ -29,6 +29,7 @@ func li(fx1, fx2, x1, x, x2):
 var Main
 func _ready():
 	Main = get_parent()
+	$Sprite.modulate = Color(randf(), randf(), randf())
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
