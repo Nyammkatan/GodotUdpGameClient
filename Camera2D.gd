@@ -22,8 +22,8 @@ func getMouseY():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	for i in range(10):
-		for j in range(10):
-			if ($C.get_node("TileMap").get_cell(j-position.x/32, i-position.y/32) == -1):
-				$C.get_node("TileMap").set_cell(j-position.x/32, i-position.y/32, 1)
-	position.x+=10*delta
+	pass
+	#for i in range(10):
+	#	for j in range(10):
+	#		if ($C.get_node("TileMap").get_cell(j-position.x/32, i-position.y/32) == -1):
+	#			$C.get_node("TileMap").set_cell(j-position.x/32, i-position.y/32, 1)
