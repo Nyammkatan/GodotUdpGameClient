@@ -5,6 +5,8 @@ var client
 var timeGlobal = 0
 var objectsList = {}
 
+var psl
+
 func removeObject(key):
 	if (typeof(objectsList[key]) != typeof(true)):
 		objectsList[key].queue_free()
@@ -14,6 +16,8 @@ func removeObject(key):
 func _ready():
 	client = client_class.new()
 	client.init("127.0.0.1", 9999, timeGlobal)
+	psl = $Camera2D.get_node("C").get_node("PlayerShowLocation")
+	client.setTilemap($Camera2D.get_node("C").get_node("TileMap"))
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -25,5 +29,5 @@ func _process(delta):
 
 
 func _on_Timer_timeout():
-	client.sendConnectionPacket()
+	client.sendConnectionPacketNew(psl.position.x, psl.position.y)
 	pass # Replace with function body.
